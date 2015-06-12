@@ -23,7 +23,7 @@
     <script src="js/event.js"></script>
     <script>
         var handler = function(e) {
-            this.innerHTML += e.type + '<br>';  
+            console.log(this, e.type)
         };
         document.getElementById('wrap').addEventListener('tap', handler, false)
                 .addEventListener('longTap', handler, false)
@@ -32,6 +32,9 @@
                 .addEventListener('swipeRight', handler, false)
                 .addEventListener('swipeUp', handler, false)
                 .addEventListener('swipeDown', handler, false);
+
+        document.body.live('tap', '.wrap', handler)
+            .live('click', '.wrap', handler);
     </script>
 </body>
 </html>
