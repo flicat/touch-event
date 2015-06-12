@@ -2,7 +2,9 @@
 ===========
 
 **调用方法**：
-node.addEventListener([event name], [function]);
+node.addEventListener([event], [handler]);            //  绑定事件
+-
+node.live([event], [selector], [handler])             //  事件委托
 -
 > - @event {String} tap                // 轻触事件
 > - @event {String} longTap            // 长按事件
@@ -11,3 +13,5 @@ node.addEventListener([event name], [function]);
 > - @event {String} swipeRight         // 向右滑屏
 > - @event {String} swipeUp            // 向上滑屏
 > - @event {String} swipeDown          // 向下滑屏
+> - @selector {String}                 // css 选择器
+> - @handler {function}                // 事件回调函数
