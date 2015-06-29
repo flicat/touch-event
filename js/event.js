@@ -5,10 +5,11 @@
  * @description 自定义事件
  */
 
-(function () {
+(function (require, exports) {
 
     Object.prototype.getItem = function(i) {
-        return this[Object.keys(this)[i]];
+        var keys = Object.keys(this).filter(function(key) { return key !== 'length' });
+        return this[keys[i]];
     };
 
     var isNumber = function(num) {
@@ -64,7 +65,7 @@
         // 事件处理
         var handler = function(e) {
             // 事件触发 DOM 节点
-//            point.target = e.target;
+            point.target = e.target;
 
             switch(e.type) {
                 case 'touchstart':
@@ -77,6 +78,8 @@
                         point.startX[i] = point.endX[i] = touche.clientX;
                         point.startY[i] = point.endY[i] = touche.clientY;
                     });
+                    point.startX.length = e.touches.length;
+                    point.startY.length = e.touches.length;
 
                     // 开始时间戳
                     point.startStamp = point.endStamp = Date.now();
@@ -100,6 +103,11 @@
                         isNumber(point.startX[i]) && (point.diffX[i] = point.endX[i] - point.startX[i]);
                         isNumber(point.startY[i]) && (point.diffY[i] = point.endY[i] - point.startY[i]);
                     });
+
+                    point.endX.length =
+                        point.endY.length =
+                            point.diffX.length =
+                                point.diffY.length = e.touches.length;
 
                     // 如果是多点触摸则计算移动触摸间距
                     if(e.touches.length > 1){

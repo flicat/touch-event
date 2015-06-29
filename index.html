@@ -48,10 +48,7 @@
                     scaleFlag = scale;
                 } else if(e.type === 'swipe'){                 // 旋转缩放
                     var point = e.data;
-                    var pointLen = Object.keys(point.endX).filter(function(a) {
-                        return Object.prototype.toString.call(point.endX[a]) === '[object Number]';
-                    }).length;
-
+                    var pointLen = point.endX.length;
 
                     if(pointLen > 1){
                         var diff = point.endApart - point.startApart;
@@ -66,9 +63,9 @@
                             scale = 0.2;
                         }
 
-                        rotate = rotateFlag + point.startAngle - point.endAngle;
+                        rotate = (rotateFlag + point.startAngle - point.endAngle) % 360;
 
-                        wrap.innerHTML = rotateFlag + '|' + scaleFlag + '<br>' + rotate + '|' + scale;
+                        wrap.innerHTML = 'rotate:' + rotate + '<br>scale:' + scale;
                         img.style.transform = img.style.webkitTransform = 'scale(' + scale + ') rotate(' + rotate + 'deg)';
                     }
                 }
@@ -81,7 +78,9 @@
 
         (function() {
             var handler = function(e) {
-                console.log(e.type, this)
+                e.preventDefault();
+                e.stopPropagation();
+                wrap.innerHTML = e.type;
             };
             wrap.addEventListener('tap', handler, false)
                     .addEventListener('longTap', handler, false)
@@ -91,8 +90,8 @@
                     .addEventListener('swipeUp', handler, false)
                     .addEventListener('swipeDown', handler, false);
 
-            document.body.live('tap', '.wrap', handler)
-                    .live('click', '.wrap', handler);
+//            document.body.live('tap', '.wrap', handler)
+//                    .live('click', '.wrap', handler);
 
         })();
     </script>
