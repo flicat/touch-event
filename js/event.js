@@ -6,16 +6,16 @@
  */
 
 (function (require, exports) {
-
-    Object.prototype.getItem = function(i) {
-        var keys = Object.keys(this).filter(function(key) { return key !== 'length' });
-        return this[keys[i]];
+    // 获取对象值
+    var getItem = function(obj, i) {
+        var keys = Object.keys(obj).filter(function(key) { return key !== 'length' });
+        return obj[keys[i]];
     };
-
+    // 判断类型是否为数字
     var isNumber = function(num) {
         return Object.prototype.toString.call(num) === '[object Number]';
     };
-
+    // 清空对象
     var empty = function() {
         [].slice.call(arguments).forEach(function(obj) {
             for(var i in obj){
@@ -25,9 +25,6 @@
             }
         });
     };
-
-    // 轻触，长按，滑屏，滑屏结束，左滑屏，右滑屏，上滑屏，下滑屏
-    var EventList = ['tap', 'longTap', 'swipe', 'swipeEnd', 'swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown'];
 
     // 计算旋转角度
     var getAngle = function(x, y) {
@@ -86,8 +83,8 @@
 
                     // 如果是多点触摸则计算开始触摸间距
                     if(e.touches.length > 1){
-                        var start_x = point.startX.getItem(1) - point.startX.getItem(0);
-                        var start_y = point.startY.getItem(1) - point.startY.getItem(0);
+                        var start_x = getItem(point.startX, 1) - getItem(point.startX, 0);
+                        var start_y = getItem(point.startY, 1) - getItem(point.startY, 0);
                         point.startApart = Math.sqrt(start_x * start_x + start_y * start_y);
                         point.startAngle = getAngle(start_x, start_y);
                     }
@@ -111,8 +108,8 @@
 
                     // 如果是多点触摸则计算移动触摸间距
                     if(e.touches.length > 1){
-                        var end_x = point.endX.getItem(1) - point.endX.getItem(0);
-                        var end_y = point.endY.getItem(1) - point.endY.getItem(0);
+                        var end_x = getItem(point.endX, 1) - getItem(point.endX, 0);
+                        var end_y = getItem(point.endY, 1) - getItem(point.endY, 0);
                         point.endApart = Math.sqrt(end_x * end_x + end_y * end_y);
                         point.endAngle = getAngle(end_x, end_y);
                     }
@@ -131,7 +128,7 @@
                     [].slice.call(e.changedTouches).forEach(function(touche, index) {
                         var i = touche.identifier || index;
                         if(Math.abs(point.diffX[i]) > 30 || Math.abs(point.diffY[i]) > 30){
-                            // 触发滑屏事件
+                            // 滑屏结束事件
                             node.trigger('swipeEnd', point, e);
 
                             if(Math.abs(point.diffX[i]) < Math.abs(point.diffY[i]) && point.diffY[i] < 0){
@@ -203,6 +200,8 @@
         return this;
     };
 
+    // 轻触，长按，滑屏，滑屏结束，左滑屏，右滑屏，上滑屏，下滑屏
+    var EventList = ['tap', 'longTap', 'swipe', 'swipeEnd', 'swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown'];
     // 事件委托
     var matches = Element.prototype.matches ||
         Element.prototype.matchesSelector ||
