@@ -6,20 +6,26 @@
  */
 
 (function (require, exports) {
-    // 获取对象值
-    var getItem = function(obj, i) {
-        var keys = Object.keys(obj).filter(function(key) { return key !== 'length' });
-        return obj[keys[i]];
+    // 判断类型是否为函数
+    var isFunction = function(num) {
+        return Object.prototype.toString.call(num) === '[object Function]';
     };
+
     // 判断类型是否为数字
     var isNumber = function(num) {
         return Object.prototype.toString.call(num) === '[object Number]';
+    };
+    // 获取对象值
+    var getItem = function(i) {
+        var obj = this;
+        var keys = Object.keys(obj).filter(function(key) { return key !== 'length' && !isFunction(obj[key]) });
+        return obj[keys[i]];
     };
     // 清空对象
     var empty = function() {
         [].slice.call(arguments).forEach(function(obj) {
             for(var i in obj){
-                if(obj.hasOwnProperty(i)){
+                if(obj.hasOwnProperty(i) && !isFunction(obj[i])){
                     delete obj[i];
                 }
             }
@@ -59,6 +65,14 @@
             startAngle: 0,                    // 多点触摸开始触摸角度值
             endAngle: 0                       // 多点触摸结束触摸角度值
         };
+
+        point.startX.keys = getItem;
+        point.startY.keys = getItem;
+        point.endX.keys = getItem;
+        point.endY.keys = getItem;
+        point.diffX.keys = getItem;
+        point.diffY.keys = getItem;
+
         // 事件处理
         var handler = function(e) {
             // 事件触发 DOM 节点
@@ -83,15 +97,15 @@
 
                     // 如果是多点触摸则计算开始触摸间距
                     if(e.touches.length > 1){
-                        var start_x = getItem(point.startX, 1) - getItem(point.startX, 0);
-                        var start_y = getItem(point.startY, 1) - getItem(point.startY, 0);
+                        var start_x = point.startX.keys(1) - point.startX.keys(0);
+                        var start_y = point.startY.keys(1) - point.startY.keys(0);
                         point.startApart = Math.sqrt(start_x * start_x + start_y * start_y);
                         point.startAngle = getAngle(start_x, start_y);
                     }
 
                     break;
                 case 'touchmove':
-
+                    
                     // 移动中的坐标点（结束坐标点）
                     [].slice.call(e.touches).forEach(function(touche, index) {
                         var i = touche.identifier || index;
@@ -108,8 +122,8 @@
 
                     // 如果是多点触摸则计算移动触摸间距
                     if(e.touches.length > 1){
-                        var end_x = getItem(point.endX, 1) - getItem(point.endX, 0);
-                        var end_y = getItem(point.endY, 1) - getItem(point.endY, 0);
+                        var end_x = point.endX.keys(1) - point.endX.keys(0);
+                        var end_y = point.endY.keys(1) - point.endY.keys(0);
                         point.endApart = Math.sqrt(end_x * end_x + end_y * end_y);
                         point.endAngle = getAngle(end_x, end_y);
                     }
@@ -180,7 +194,7 @@
         event.initEvent(type, true, true);
         event.data = data || {};
         event.eventName = type;
-        event.target = this;
+        event.target = this;          
 
         // 取消默认事件
         if(e && e instanceof Event){
