@@ -15,22 +15,6 @@
     var isNumber = function(num) {
         return Object.prototype.toString.call(num) === '[object Number]';
     };
-    // 获取对象值
-    var getItem = function(i) {
-        var obj = this;
-        var keys = Object.keys(obj).filter(function(key) { return key !== 'length' && !isFunction(obj[key]) });
-        return obj[keys[i]];
-    };
-    // 清空对象
-    var empty = function() {
-        [].slice.call(arguments).forEach(function(obj) {
-            for(var i in obj){
-                if(obj.hasOwnProperty(i) && !isFunction(obj[i])){
-                    delete obj[i];
-                }
-            }
-        });
-    };
 
     // 计算旋转角度
     var getAngle = function(x, y) {
@@ -45,6 +29,41 @@
         return angle;
     };
 
+    // 创建一个触摸点对象
+    var createPoint = function() {
+        return Object.defineProperties({}, {
+            length: {
+                get: function() {
+                    return Object.keys(this).length;
+                },
+                set: function(value) {
+                    return false;
+                },
+                enumerable: false
+            },
+            keys: {
+                value: function(i) {
+                    return this[Object.keys(this)[i]];
+                },
+                writable: false,
+                enumerable: false,
+                configurable: false
+            },
+            empty: {
+                value: function() {
+                    for(var i in this){
+                        if(this.hasOwnProperty(i)){
+                            delete this[i];
+                        }
+                    }
+                },
+                writable: false,
+                enumerable: false,
+                configurable: false
+            }
+        });
+    };
+
     // 定义滑屏事件
     var bindEvent = function(node) {
         node.__bind_custom_event = true;
@@ -54,24 +73,17 @@
             target: null,                     // 事件触发 DOM 节点
             startStamp: 0,                    // 事件开始时间戳
             endStamp: 0,                      // 事件结束时间戳
-            startX: {},                       // 开始触摸 X 坐标点 [point1,point2...]
-            startY: {},                       // 开始触摸 Y 坐标点 [point1,point2...]
-            endX: {},                         // 结束触摸 X 坐标点 [point1,point2...]
-            endY: {},                         // 结束触摸 Y 坐标点 [point1,point2...]
-            diffX: {},                        // 触摸 X 坐标偏移量 [point1,point2...]
-            diffY: {},                        // 触摸 Y 坐标偏移量 [point1,point2...]
             startApart: 0,                    // 多点触摸开始触摸间距值
             endApart: 0,                      // 多点触摸结束触摸间距值
             startAngle: 0,                    // 多点触摸开始触摸角度值
-            endAngle: 0                       // 多点触摸结束触摸角度值
+            endAngle: 0,                      // 多点触摸结束触摸角度值
+            startX: createPoint(),            // 开始触摸 X 坐标点
+            startY: createPoint(),            // 开始触摸 Y 坐标点
+            endX: createPoint(),              // 结束触摸 X 坐标点
+            endY: createPoint(),              // 结束触摸 Y 坐标点
+            diffX: createPoint(),             // 触摸 X 坐标偏移量
+            diffY: createPoint()              // 触摸 Y 坐标偏移量
         };
-
-        point.startX.keys = getItem;
-        point.startY.keys = getItem;
-        point.endX.keys = getItem;
-        point.endY.keys = getItem;
-        point.diffX.keys = getItem;
-        point.diffY.keys = getItem;
 
         // 事件处理
         var handler = function(e) {
@@ -81,7 +93,10 @@
             switch(e.type) {
                 case 'touchstart':
                     // 重置坐标点信息
-                    empty(point.startX, point.startY, point.diffX, point.diffY);
+                    point.startX.empty();
+                    point.startY.empty();
+                    point.diffX.empty();
+                    point.diffY.empty();
 
                     // 保存开始坐标点
                     [].slice.call(e.touches).forEach(function(touche, index) {
@@ -89,8 +104,6 @@
                         point.startX[i] = point.endX[i] = touche.clientX;
                         point.startY[i] = point.endY[i] = touche.clientY;
                     });
-                    point.startX.length = e.touches.length;
-                    point.startY.length = e.touches.length;
 
                     // 开始时间戳
                     point.startStamp = point.endStamp = Date.now();
@@ -115,11 +128,6 @@
                         isNumber(point.startY[i]) && (point.diffY[i] = point.endY[i] - point.startY[i]);
                     });
 
-                    point.endX.length =
-                        point.endY.length =
-                            point.diffX.length =
-                                point.diffY.length = e.touches.length;
-
                     // 如果是多点触摸则计算移动触摸间距
                     if(e.touches.length > 1){
                         var end_x = point.endX.keys(1) - point.endX.keys(0);
@@ -136,7 +144,8 @@
                 case 'touchend':
 
                     point.endStamp = Date.now();
-                    empty(point.endX, point.endY);
+                    point.endX.empty();
+                    point.endY.empty();
 
                     // 结束坐标点
                     [].slice.call(e.changedTouches).forEach(function(touche, index) {

@@ -24,13 +24,18 @@
 > - target: null,                     // 事件触发 DOM 节点
 > - startStamp: 0,                    // 事件开始时间戳
 > - endStamp: 0,                      // 事件结束时间戳
-> - startX: {},                       // 开始触摸 X 坐标点 [point1,point2...]
-> - startY: {},                       // 开始触摸 Y 坐标点 [point1,point2...]
-> - endX: {},                         // 结束触摸 X 坐标点 [point1,point2...]
-> - endY: {},                         // 结束触摸 Y 坐标点 [point1,point2...]
-> - diffX: {},                        // 触摸 X 坐标偏移量 [point1,point2...]
-> - diffY: {},                        // 触摸 Y 坐标偏移量 [point1,point2...]
 > - startApart: 0,                    // 多点触摸开始触摸间距值
 > - endApart: 0,                      // 多点触摸结束触摸间距值
 > - startAngle: 0,                    // 多点触摸开始触摸角度值
 > - endAngle: 0                       // 多点触摸结束触摸角度值
+> - @point {Point} startX: {},        // 开始触摸 X 坐标点
+> - @point {Point} startY: {},        // 开始触摸 Y 坐标点
+> - @point {Point} endX: {},          // 结束触摸 X 坐标点
+> - @point {Point} endY: {},          // 结束触摸 Y 坐标点
+> - @point {Point} diffX: {},         // 触摸 X 坐标偏移量
+> - @point {Point} diffY: {},         // 触摸 Y 坐标偏移量
+
+>**point 对象：**
+
+> - length                            // 触摸点数量
+> - keys(i)                           // 获取触摸点
