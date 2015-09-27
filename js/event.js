@@ -6,10 +6,9 @@
  */
 
 (function (require, exports) {
-    // 判断类型是否为函数
-    var isFunction = function(num) {
-        return Object.prototype.toString.call(num) === '[object Function]';
-    };
+
+    // 轻触，长按，滑屏，滑屏结束，左滑屏，右滑屏，上滑屏，下滑屏
+    var EventList = ['tap', 'longTap', 'swipe', 'swipeEnd', 'swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown'];
 
     // 判断类型是否为数字
     var isNumber = function(num) {
@@ -46,8 +45,7 @@
                     return this[Object.keys(this)[i]];
                 },
                 writable: false,
-                enumerable: false,
-                configurable: false
+                enumerable: false
             },
             empty: {
                 value: function() {
@@ -58,8 +56,7 @@
                     }
                 },
                 writable: false,
-                enumerable: false,
-                configurable: false
+                enumerable: false
             }
         });
     };
@@ -223,8 +220,6 @@
         return this;
     };
 
-    // 轻触，长按，滑屏，滑屏结束，左滑屏，右滑屏，上滑屏，下滑屏
-    var EventList = ['tap', 'longTap', 'swipe', 'swipeEnd', 'swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown'];
     // 事件委托
     var matches = Element.prototype.matches ||
         Element.prototype.matchesSelector ||
