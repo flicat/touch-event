@@ -5,6 +5,7 @@
 
 > - node.addEventListener([event], [handler]);            //  绑定事件
 > - node.live([event], [selector], [handler])             //  事件委托
+> - node.die([event])                                     //  取消事件委托
 
 >**参数详解：**
 

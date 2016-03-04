@@ -115,7 +115,7 @@
 
                     break;
                 case 'touchmove':
-                    
+
                     // 移动中的坐标点（结束坐标点）
                     [].slice.call(e.touches).forEach(function(touche, index) {
                         var i = touche.identifier || index;
@@ -146,24 +146,29 @@
 
                     // 结束坐标点
                     [].slice.call(e.changedTouches).forEach(function(touche, index) {
-                        var i = touche.identifier || index;
-                        if(Math.abs(point.diffX[i]) > 30 || Math.abs(point.diffY[i]) > 30){
+                        var i = touche.identifier || index,
+                            diffX = point.diffX[i],
+                            diffY = point.diffY[i];
+
+                        if(diffX || diffY){
+                            if(Math.abs(diffX) > 30 || Math.abs(diffY) > 30){
+                                if(Math.abs(diffX) < Math.abs(diffY) && diffY < 0){
+                                    // 上滑屏
+                                    node.trigger('swipeUp', point, e);
+                                } else if(Math.abs(diffX) < Math.abs(diffY) && diffY > 0) {
+                                    // 下滑屏
+                                    node.trigger('swipeDown', point, e);
+                                } else if(Math.abs(diffX) > Math.abs(diffY) && diffX < 0) {
+                                    // 左滑屏
+                                    node.trigger('swipeLeft', point, e);
+                                } else if(Math.abs(diffX) > Math.abs(diffY) && diffX > 0) {
+                                    // 右滑屏
+                                    node.trigger('swipeRight', point, e);
+                                }
+                            }
+
                             // 滑屏结束事件
                             node.trigger('swipeEnd', point, e);
-
-                            if(Math.abs(point.diffX[i]) < Math.abs(point.diffY[i]) && point.diffY[i] < 0){
-                                // 上滑屏
-                                node.trigger('swipeUp', point, e);
-                            } else if(Math.abs(point.diffX[i]) < Math.abs(point.diffY[i]) && point.diffY[i] > 0) {
-                                // 下滑屏
-                                node.trigger('swipeDown', point, e);
-                            } else if(Math.abs(point.diffX[i]) > Math.abs(point.diffY[i]) && point.diffX[i] < 0) {
-                                // 左滑屏
-                                node.trigger('swipeLeft', point, e);
-                            } else if(Math.abs(point.diffX[i]) > Math.abs(point.diffY[i]) && point.diffX[i] > 0) {
-                                // 右滑屏
-                                node.trigger('swipeRight', point, e);
-                            }
                         } else {
                             // 点击事件
                             node.trigger('tap', point, e);
@@ -200,7 +205,7 @@
         event.initEvent(type, true, true);
         event.data = data || {};
         event.eventName = type;
-        event.target = this;          
+        event.target = this;
 
         // 取消默认事件
         if(e && e instanceof Event){
@@ -243,9 +248,29 @@
             }
         };
 
+        // 记录委托的事件
+        if(!node._custom_event_live){
+            node._custom_event_live = {};
+        }
+        if(!node._custom_event_live[event]){
+            node._custom_event_live[event] = [];
+        }
+        node._custom_event_live[event].push(handler);
+
         node.addEventListener(event, handler, false);
 
         return node;
     };
+    Element.prototype.die = function(event) {
+        var node = this;
+        if(node._custom_event_live &&
+            node._custom_event_live[event] &&
+            node._custom_event_live[event].length){
+            node._custom_event_live[event].forEach(function(handler) {
+                node.removeEventListener(event, handler, false);
+            });
+        }
+        return node;
+    };
 
-})();
+});
