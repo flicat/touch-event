@@ -150,21 +150,19 @@
                             diffX = point.diffX[i],
                             diffY = point.diffY[i];
 
-                        if(diffX || diffY){
-                            if(Math.abs(diffX) > 30 || Math.abs(diffY) > 30){
-                                if(Math.abs(diffX) < Math.abs(diffY) && diffY < 0){
-                                    // 上滑屏
-                                    node.trigger('swipeUp', point, e);
-                                } else if(Math.abs(diffX) < Math.abs(diffY) && diffY > 0) {
-                                    // 下滑屏
-                                    node.trigger('swipeDown', point, e);
-                                } else if(Math.abs(diffX) > Math.abs(diffY) && diffX < 0) {
-                                    // 左滑屏
-                                    node.trigger('swipeLeft', point, e);
-                                } else if(Math.abs(diffX) > Math.abs(diffY) && diffX > 0) {
-                                    // 右滑屏
-                                    node.trigger('swipeRight', point, e);
-                                }
+                        if(Math.abs(diffX) > 30 || Math.abs(diffY) > 30) {
+                            if(Math.abs(diffX) < Math.abs(diffY) && diffY < 0){
+                                // 上滑屏
+                                node.trigger('swipeUp', point, e);
+                            } else if(Math.abs(diffX) < Math.abs(diffY) && diffY > 0) {
+                                // 下滑屏
+                                node.trigger('swipeDown', point, e);
+                            } else if(Math.abs(diffX) > Math.abs(diffY) && diffX < 0) {
+                                // 左滑屏
+                                node.trigger('swipeLeft', point, e);
+                            } else if(Math.abs(diffX) > Math.abs(diffY) && diffX > 0) {
+                                // 右滑屏
+                                node.trigger('swipeRight', point, e);
                             }
 
                             // 滑屏结束事件
