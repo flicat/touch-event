@@ -3,7 +3,8 @@
 
 >**调用方法**：
 
-> - node.addEventListener([event], [handler]);            //  绑定事件
+> - node.addEventListener([event], [handler])             //  绑定事件
+> - node.one([event], [handler])                          //  绑定一次性事件
 > - node.live([event], [selector], [handler])             //  事件委托
 > - node.die([event])                                     //  取消事件委托
 

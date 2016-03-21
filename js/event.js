@@ -273,4 +273,15 @@
         return node;
     };
 
+    // 只触发一次的事件
+    Element.prototype.one = function(event, callback) {
+        var node = this;
+        var one = function(e) {
+            node.removeEventListener(event, one, false);
+            callback.call(this, e);
+        };
+        node.addEventListener(event, one, false);
+        return node;
+    };
+
 });
