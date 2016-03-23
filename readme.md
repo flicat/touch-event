@@ -3,10 +3,10 @@
 
 >**调用方法**：
 
-> - node.addEventListener([event], [handler])             //  绑定事件
-> - node.one([event], [handler])                          //  绑定一次性事件
-> - node.live([event], [selector], [handler])             //  事件委托
-> - node.die([event])                                     //  取消事件委托
+> - node.addEventListener(event, [, selector], handler)             //  绑定/委托事件
+> - node.on(event [, selector], handler)                           //  同 addEventListener 
+> - node.one(event, handler)                                      //  绑定一次性事件
+> - node.off(event)                                                 //  取消事件委托
 
 >**参数详解：**
 

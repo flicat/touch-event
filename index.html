@@ -90,8 +90,9 @@
                     .addEventListener('swipeUp', handler, false)
                     .addEventListener('swipeDown', handler, false);
 
-//            document.body.live('tap', '.wrap', handler)
-//                    .live('click', '.wrap', handler);
+            document.body.addEventListener('tap', 'img', function(e) {
+                wrap.innerHTML = this.nodeName + ': ' + e.type;
+            });
 
         })();
     </script>

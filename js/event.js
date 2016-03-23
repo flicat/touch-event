@@ -63,7 +63,7 @@
 
     // 定义滑屏事件
     var bindEvent = function(node) {
-        node.__bind_custom_event = true;
+        node.__bind_custom_event__ = true;
 
         // 坐标点
         var point = {
@@ -187,15 +187,6 @@
         node.addEventListener('touchcancel', handler, false);
     };
 
-    // 重写事件监听函数
-    var oldEventListener = Element.prototype.addEventListener;
-    Element.prototype.addEventListener = Element.prototype.on = function(eventName) {
-        if(EventList.indexOf(eventName) > -1 && !this.__bind_custom_event){
-            bindEvent(this);
-        }
-        oldEventListener.apply(this, arguments);
-        return this;
-    };
 
     // 事件触发
     Element.prototype.trigger = function (type, data, e) {
@@ -223,48 +214,79 @@
         return this;
     };
 
+    // 重写事件监听函数
+    var oldEventListener = Element.prototype.addEventListener;
+
     // 事件委托
     var matches = Element.prototype.matches ||
         Element.prototype.matchesSelector ||
         Element.prototype.webkitMatchesSelector;
-    Element.prototype.live = function(event, selector, callback) {
+    Element.prototype.addEventListener = Element.prototype.on = function(event) {
         var node = this;
-        var handler = function(e) {
-            var target = e.target;
-            // 如果是自定义事件则 target 为 e.data.target
-            if(EventList.indexOf(event) > -1 && target === node && e.data && e.data.target){
-                target = e.data.target;
-            }
-            // 匹配选中的子节点
-            var selected = matches.call(target, selector);
-            while(!selected && target.parentNode && target !== node){
-                target = target.parentNode;
-                selected = matches.call(target, selector);
-            }
-            if(selected){
-                callback.call(target, e);
-            }
-        };
+        var args = [].slice.call(arguments);
+        var selector, callback;
+
+        if(({}).toString.call(args[1]) === '[object String]'){
+            selector = args[1];
+        }
+
+        if(selector && ({}).toString.call(args[2]) === '[object Function]'){
+            callback = args[2];
+        } else if(({}).toString.call(args[1]) === '[object Function]') {
+            callback = args[1];
+        } else {
+            callback = function() {};
+        }
+
+        if(EventList.indexOf(event) > -1 && !this.__bind_custom_event__){
+            bindEvent(node);
+        }
 
         // 记录委托的事件
-        if(!node._custom_event_live){
-            node._custom_event_live = {};
+        if(!node.__custom_event_live__){
+            node.__custom_event_live__ = {};
         }
-        if(!node._custom_event_live[event]){
-            node._custom_event_live[event] = [];
+        if(!node.__custom_event_live__[event]){
+            node.__custom_event_live__[event] = [];
         }
-        node._custom_event_live[event].push(handler);
 
-        node.addEventListener(event, handler, false);
+        if(selector) {
+            // 事件委托回调函数
+            var handler = function(e) {
+                var target = e.target;
+                // 如果是自定义事件则 target 为 e.data.target
+                if(EventList.indexOf(event) > -1 && target === node && e.data && e.data.target){
+                    target = e.data.target;
+                }
+                // 匹配选中的子节点
+                var selected = matches.call(target, selector);
+                while(!selected && target.parentNode && target !== node){
+                    target = target.parentNode;
+                    selected = matches.call(target, selector);
+                }
+                if(selected){
+                    callback.call(target, e);
+                }
+            };
+
+            node.__custom_event_live__[event].push(handler);
+            oldEventListener.call(node, event, handler, false);
+        } else {
+            node.__custom_event_live__[event].push(callback);
+            oldEventListener.call(node, event, callback, false);
+        }
 
         return node;
     };
-    Element.prototype.die = function(event) {
+    Element.prototype.off = function(event, handler) {
         var node = this;
-        if(node._custom_event_live &&
-            node._custom_event_live[event] &&
-            node._custom_event_live[event].length){
-            node._custom_event_live[event].forEach(function(handler) {
+
+        if(({}).toString.call(handler) === '[object Function]'){
+            node.removeEventListener(event, handler, false);
+        } else if(node.__custom_event_live__ &&
+            node.__custom_event_live__[event] &&
+            node.__custom_event_live__[event].length){
+            node.__custom_event_live__[event].forEach(function(handler) {
                 node.removeEventListener(event, handler, false);
             });
         }
@@ -282,4 +304,4 @@
         return node;
     };
 
-});
+})();
