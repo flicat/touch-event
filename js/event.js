@@ -5,7 +5,7 @@
  * @description 自定义事件
  */
 
-(function (require, exports) {
+(function () {
 
     // 轻触，长按，滑屏，滑屏结束，左滑屏，右滑屏，上滑屏，下滑屏
     var EventList = ['tap', 'longTap', 'swipe', 'swipeEnd', 'swipeLeft', 'swipeRight', 'swipeUp', 'swipeDown'];
@@ -150,7 +150,7 @@
                             diffX = point.diffX[i],
                             diffY = point.diffY[i];
 
-                        if(Math.abs(diffX) > 30 || Math.abs(diffY) > 30) {
+                        if(Math.abs(diffX) > 0 || Math.abs(diffY) > 0) {
                             if(Math.abs(diffX) < Math.abs(diffY) && diffY < 0){
                                 // 上滑屏
                                 node.trigger('swipeUp', point, e);
