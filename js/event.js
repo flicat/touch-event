@@ -226,6 +226,10 @@
         var args = [].slice.call(arguments);
         var selector, callback;
 
+        var eventArr = String(event).split('.');
+        var eventNameSpace = eventArr[1] || 'all';
+        event = eventArr[0];
+
         if(({}).toString.call(args[1]) === '[object String]'){
             selector = args[1];
         }
@@ -246,8 +250,11 @@
         if(!node.__custom_event_live__){
             node.__custom_event_live__ = {};
         }
-        if(!node.__custom_event_live__[event]){
-            node.__custom_event_live__[event] = [];
+        if(!node.__custom_event_live__[eventNameSpace]){
+            node.__custom_event_live__[eventNameSpace] = {};
+        }
+        if(!node.__custom_event_live__[eventNameSpace][event]){
+            node.__custom_event_live__[eventNameSpace][event] = [];
         }
 
         if(selector) {
@@ -269,10 +276,10 @@
                 }
             };
 
-            node.__custom_event_live__[event].push(handler);
+            node.__custom_event_live__[eventNameSpace][event].push(handler);
             oldEventListener.call(node, event, handler, false);
         } else {
-            node.__custom_event_live__[event].push(callback);
+            node.__custom_event_live__[eventNameSpace][event].push(callback);
             oldEventListener.call(node, event, callback, false);
         }
 
@@ -281,12 +288,17 @@
     Element.prototype.off = function(event, handler) {
         var node = this;
 
+        var eventArr = String(event).split('.');
+        var eventNameSpace = eventArr[1] || 'all';
+        event = eventArr[0];
+
         if(({}).toString.call(handler) === '[object Function]'){
             node.removeEventListener(event, handler, false);
         } else if(node.__custom_event_live__ &&
-            node.__custom_event_live__[event] &&
-            node.__custom_event_live__[event].length){
-            node.__custom_event_live__[event].forEach(function(handler) {
+            node.__custom_event_live__[eventNameSpace] &&
+            node.__custom_event_live__[eventNameSpace][event] &&
+            node.__custom_event_live__[eventNameSpace][event].length){
+            node.__custom_event_live__[eventNameSpace][event].forEach(function(handler) {
                 node.removeEventListener(event, handler, false);
             });
         }
