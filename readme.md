@@ -1,44 +1,92 @@
-手机版触摸事件插件
+触摸事件插件
 ===========
 
->**调用方法**：
+##### 调用方法：
+```javascript
+node.addEventListener(event, handler)         //  绑定事件
+node.removeEventListener(event, handler)      //  取消事件
+```
 
-> - node.addEventListener(event, [, selector], handler)             //  绑定/委托事件
-> - node.on(event [, selector], handler)                           //  同 addEventListener 
-> - node.one(event, handler)                                      //  绑定一次性事件
-> - node.off(event)                                                 //  取消事件委托
+##### event 可用的事件列表
+```JSON
+tap                // 轻触事件
+longTap            // 长按事件
+swipe              // 滑屏事件（持续触发）
+swipeEnd           // 滑屏结束事件
+swipeLeft          // 向左滑屏
+swipeRight         // 向右滑屏
+swipeUp            // 向上滑屏
+swipeDown          // 向下滑屏
+```
 
->**参数详解：**
+##### e.data.points
+```JSON
+target: HTMLElement,   // 事件触发 DOM 节点
+startStamp: 0,         // 事件开始时间戳
+endStamp: 0,           // 事件结束时间戳
+startApart: 0,         // 两点触摸，开始触摸间距值
+endApart: 0,           // 两点触摸，结束触摸间距值
+startAngle: 0,         // 两点触摸，开始触摸角度值
+endAngle: 0            // 两点触摸，结束触摸角度值
+startX: {},            // Point对象，开始触摸 X 坐标点
+startY: {},            // Point对象，开始触摸 Y 坐标点
+endX: {},              // Point对象，结束触摸 X 坐标点
+endY: {},              // Point对象，结束触摸 Y 坐标点
+diffX: {},             // Point对象，触摸 X 坐标偏移量
+diffY: {},             // Point对象，触摸 Y 坐标偏移量
+```
 
-> - @event {String} tap                // 轻触事件
-> - @event {String} longTap            // 长按事件
-> - @event {String} swipe              // 滑屏事件（持续触发）
-> - @event {String} swipeEnd           // 滑屏结束事件
-> - @event {String} swipeLeft          // 向左滑屏
-> - @event {String} swipeRight         // 向右滑屏
-> - @event {String} swipeUp            // 向上滑屏
-> - @event {String} swipeDown          // 向下滑屏
-> - @selector {String}                 // css 选择器
-> - @handler {function}                // 事件回调函数
+##### Point 对象
+```JSON
+length: 1           // 触摸点数量
+keys: Function      // 获取触摸点
+```
 
->**e.data 对象属性：**
+##### 使用Demo
+```javascript
+document.body.addEventListener('swipe', e => {
+  console.log(e.data.points)
+})
+```
 
-> - target: null,                     // 事件触发 DOM 节点
-> - startStamp: 0,                    // 事件开始时间戳
-> - endStamp: 0,                      // 事件结束时间戳
-> - startApart: 0,                    // 多点触摸开始触摸间距值
-> - endApart: 0,                      // 多点触摸结束触摸间距值
-> - startAngle: 0,                    // 多点触摸开始触摸角度值
-> - endAngle: 0                       // 多点触摸结束触摸角度值
-> - @point {Point} startX: {},        // 开始触摸 X 坐标点
-> - @point {Point} startY: {},        // 开始触摸 Y 坐标点
-> - @point {Point} endX: {},          // 结束触摸 X 坐标点
-> - @point {Point} endY: {},          // 结束触摸 Y 坐标点
-> - @point {Point} diffX: {},         // 触摸 X 坐标偏移量
-> - @point {Point} diffY: {},         // 触摸 Y 坐标偏移量
+##### 在vue中使用
+```html
+<template>
+  <h2>scale and rotate image</h2>
+  <img class="image" src="image/img.jpg" @touchstart="handler" @swipe="handler" />
+</template>
+<script setup>
+let scaleFlag = 1
+let rotateFlag = 0
+let scale = 1
+let rotate = 0
 
->**point 对象：**
+const handler = e => {
+  if (e.type === 'touchstart') {
+    rotateFlag = rotate
+    scaleFlag = scale
+  } else if (e.type === 'swipe') {
+    const points = e.data.points
+    const pointLen = points.endX.length
 
-> - length                            // 触摸点数量
-> - keys(i)                           // 获取触摸点
-> - empty()                           // 清空触摸点
+    if (pointLen > 1) {
+      const diff = points.endApart - points.startApart
+
+      if (diff > 0) {
+        scale = scaleFlag + diff / 100
+      } else if (diff < 0) {
+        scale = scaleFlag - Math.abs(diff) / 100
+      }
+
+      if (scale < 0.2) {
+        scale = 0.2
+      }
+
+      rotate = (rotateFlag + points.startAngle - points.endAngle) % 360
+
+      img.style.transform = `scale(${scale}) rotate(${rotate}deg)`
+    }
+  }
+}
+</script>
+```

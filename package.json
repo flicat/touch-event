@@ -1,0 +1,42 @@
+{
+  "name": "custom-touch-event",
+  "version": "1.0.0",
+  "description": "Custom Touch Events.",
+  "keywords": [
+    "touch",
+    "event",
+    "custom event",
+    "frontend"
+  ],
+  "author": {
+    "name": "flicat",
+    "email": "liyuelong1020@gmail.com",
+    "url": "https://github.com/flicat"
+  },
+  "scripts": {
+    "build": "node build.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:flicat/touch-event.git"
+  },
+  "homepage": "https://github.com/flicat/touch-event",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/flicat/touch-event/issues"
+  },
+  "files": [
+    "lib"
+  ],
+  "main": "./lib/index.umd.js",
+  "module": "./lib/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./lib/index.mjs",
+      "require": "./lib/index.umd.js"
+    }
+  },
+  "devDependencies": {
+    "vite": "^4.3.1"
+  }
+}

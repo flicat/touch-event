@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+  <meta name="format-detection" content="telephone=no,email=no">
+  <meta name="screen-orientation" content="portrait">
+  <meta name="x5-orientation" content="portrait">
+  <title>touch event</title>
+  <style type="text/css">
+    html,
+    body,
+    .wrap {
+      padding: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image {
+      position: absolute;
+      left: 10%;
+      top: 10%;
+      width: 80%;
+      height: auto;
+      -webkit-transform-origin: 50% 50%;
+      transform-origin: 50% 50%;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="wrap" id="wrap">尝试【缩放】和【旋转】颜路二师公！</div>
+  <img class="image" src="image/img.jpg" alt="" id="image" />
+  <script src="./vconsole.min.js"></script>
+  <script>
+    new window.VConsole();
+  </script>
+  <script type="module">
+    import touchEvent from "../src/index.js?v1.0.2";
+
+    touchEvent();
+
+    const wrap = document.getElementById('wrap');
+    const img = document.getElementById('image');
+
+    let scaleFlag = 1;
+    let rotateFlag = 0;
+    let scale = 1;
+    let rotate = 0;
+
+    const handlerScaleRotate = e => {
+      console.log('handlerScaleRotate: ', e)
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.type === 'touchstart') {           // 记录上次缩放的状态
+        rotateFlag = rotate;
+        scaleFlag = scale;
+      } else if (e.type === 'swipe') {                 // 旋转缩放
+        var points = e.data.points;
+        var pointLen = points.endX.length;
+
+        if (pointLen > 1) {
+          var diff = points.endApart - points.startApart;
+
+          if (diff > 0) {
+            scale = scaleFlag + diff / 500;
+          } else if (diff < 0) {
+            scale = scaleFlag - Math.abs(diff) / 500;
+          }
+
+          if (scale < 0.2) {
+            scale = 0.2;
+          }
+
+          rotate = (rotateFlag + points.startAngle - points.endAngle) % 360;
+
+          wrap.innerHTML = `startApart: ${points.startApart.toFixed(2)}, endApart: ${points.endApart.toFixed(2)}<br/>
+                          startAngle: ${points.startAngle.toFixed(2)}, endAngle: ${points.endAngle.toFixed(2)}<br/>
+                          rotate: ${rotate.toFixed(2)}, scale: ${scale.toFixed(2)}<br/>`;
+          img.style.transform = img.style.webkitTransform = `scale(${scale}) rotate(${rotate}deg)`;
+        }
+      }
+    }
+
+    img.addEventListener('touchstart', handlerScaleRotate, false);
+    img.addEventListener('swipe', handlerScaleRotate, false);
+
+    const handlerEvent = e => {
+      e.preventDefault();
+      e.stopPropagation();
+      wrap.innerHTML = e.type;
+    };
+
+    const bindAllEvent = node => {
+      node.addEventListener('tap', handlerEvent, false)
+      node.addEventListener('longTap', handlerEvent, false)
+      node.addEventListener('swipe', handlerEvent, false)
+      node.addEventListener('swipeLeft', handlerEvent, false)
+      node.addEventListener('swipeRight', handlerEvent, false)
+      node.addEventListener('swipeUp', handlerEvent, false)
+      node.addEventListener('swipeDown', handlerEvent, false);
+    }
+
+    bindAllEvent(document);
+  </script>
+</body>
+
+</html>
