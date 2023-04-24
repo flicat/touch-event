@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - master
-    paths:
-      - 'package.json'
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest

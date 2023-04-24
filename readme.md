@@ -1,52 +1,61 @@
 触摸事件插件
 ===========
+##### 安装与使用：
+```bash
+npm i custom-touch-event -S
+```
+```javascript
+// 初始化事件委托
+import initTouchEvent from 'custom-touch-event'
+initTouchEvent()
+```
+
 
 ##### 调用方法：
 ```javascript
-node.addEventListener(event, handler)         //  绑定事件
-node.removeEventListener(event, handler)      //  取消事件
+// 绑定事件
+const handler = e => {
+  console.log(e.data.points)
+}
+node.addEventListener('swipe', handler)         //  绑定事件
+node.removeEventListener('swipe', handler)      //  取消事件
 ```
 
 ##### event 可用的事件列表
-```JSON
-tap                // 轻触事件
-longTap            // 长按事件
-swipe              // 滑屏事件（持续触发）
-swipeEnd           // 滑屏结束事件
-swipeLeft          // 向左滑屏
-swipeRight         // 向右滑屏
-swipeUp            // 向上滑屏
-swipeDown          // 向下滑屏
-```
+- tap                // 轻触事件
+- longTap            // 长按事件
+- swipe              // 滑屏事件（持续触发）
+- swipeEnd           // 滑屏结束事件
+- swipeLeft          // 向左滑屏
+- swipeRight         // 向右滑屏
+- swipeUp            // 向上滑屏
+- swipeDown          // 向下滑屏
 
 ##### e.data.points
-```JSON
-target: HTMLElement,   // 事件触发 DOM 节点
-startStamp: 0,         // 事件开始时间戳
-endStamp: 0,           // 事件结束时间戳
-startApart: 0,         // 两点触摸，开始触摸间距值
-endApart: 0,           // 两点触摸，结束触摸间距值
-startAngle: 0,         // 两点触摸，开始触摸角度值
-endAngle: 0            // 两点触摸，结束触摸角度值
-startX: {},            // Point对象，开始触摸 X 坐标点
-startY: {},            // Point对象，开始触摸 Y 坐标点
-endX: {},              // Point对象，结束触摸 X 坐标点
-endY: {},              // Point对象，结束触摸 Y 坐标点
-diffX: {},             // Point对象，触摸 X 坐标偏移量
-diffY: {},             // Point对象，触摸 Y 坐标偏移量
+```javascript
+{
+  target: HTMLElement,   // 事件触发 DOM 节点
+  startStamp: 0,         // 事件开始时间戳
+  endStamp: 0,           // 事件结束时间戳
+  startApart: 0,         // 两点触摸，开始触摸间距值
+  endApart: 0,           // 两点触摸，结束触摸间距值
+  startAngle: 0,         // 两点触摸，开始触摸角度值
+  endAngle: 0            // 两点触摸，结束触摸角度值
+  startX: {},            // Point对象，开始触摸 X 坐标点
+  startY: {},            // Point对象，开始触摸 Y 坐标点
+  endX: {},              // Point对象，结束触摸 X 坐标点
+  endY: {},              // Point对象，结束触摸 Y 坐标点
+  diffX: {},             // Point对象，触摸 X 坐标偏移量
+  diffY: {}              // Point对象，触摸 Y 坐标偏移量
+}
 ```
 
 ##### Point 对象
-```JSON
-length: 1           // 触摸点数量
-keys: Function      // 获取触摸点
-```
-
-##### 使用Demo
 ```javascript
-document.body.addEventListener('swipe', e => {
-  console.log(e.data.points)
-})
+{
+  length: 1,           // 触摸点数量
+  keys: Function       // 获取触摸点
+}
 ```
 
 ##### 在vue中使用
